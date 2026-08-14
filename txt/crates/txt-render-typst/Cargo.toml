@@ -1,0 +1,10 @@
+[package]
+name = "txt-render-typst"
+description = "Typst print backend for txt: renders the .tx document model to Typst source (ADR 0001)"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[dependencies]
+txt-core = { path = "../txt-core" }

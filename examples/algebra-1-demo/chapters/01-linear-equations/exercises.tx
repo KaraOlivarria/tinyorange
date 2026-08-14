@@ -29,7 +29,7 @@ $x = 3$.
 Solve $\dfrac{x}{4} + 7 = 12$.
 
 ::: hint
-Undo the $+\,7$ first, then the division by 4.
+Undo the $+7$ first, then the division by 4.
 :::
 
 ::: answer {audience="teacher"}

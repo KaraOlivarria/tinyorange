@@ -1,0 +1,78 @@
+(* ============================================================
+   .tx grammar, format version 1 (draft 0.2) — normative
+   Line-oriented surface grammar. The block vocabulary itself is
+   defined by txt/schema/blocks.toml, not by this grammar.
+   Companion prose: docs/txt/format.md
+   ============================================================ *)
+
+file            = frontmatter , body ;
+
+(* ---- frontmatter ------------------------------------------- *)
+frontmatter     = { blank-line } , fence , toml-document , fence ;
+fence           = "+++" , line-end ;
+(* toml-document is standard TOML. Required top-level keys:
+   id (string), kind (string), title (string).
+   Optional: standards (array of string). Other keys are
+   preserved and available to renderers. *)
+
+(* ---- body -------------------------------------------------- *)
+body            = { block-open | block-close | text-line } ;
+
+block-open      = indent? , ":::" , ws , kind , [ ws , attr-list ] , line-end ;
+block-close     = indent? , ":::" , line-end ;
+kind            = lower-char , { lower-char | "-" } ;
+
+attr-list       = "{" , [ attr , { ws , attr } ] , "}" ;
+attr            = id-attr | kv-attr | flag-attr ;
+id-attr         = "#" , name ;                (* at most one per list *)
+kv-attr         = name , "=" , attr-value ;
+attr-value      = quoted-value | bare-value ;
+quoted-value    = '"' , { any-char - '"' } , '"' ;
+bare-value      = { any-char - ws - "}" } ;
+flag-attr       = name ;                      (* equivalent to name="true" *)
+name            = alpha-char , { alpha-char | digit | "-" | "_" } ;
+
+(* Blocks nest: a block-open pushes, a block-close pops the innermost
+   open block. A close with no open block, or EOF with open blocks,
+   is a parse error. *)
+
+text-line       = ? any line that is not a block marker ? ;
+
+(* ---- text-run structure (within consecutive text-lines) ---- *)
+(* Text runs are further structured into body elements: *)
+heading         = ( "#" | "##" | "###" ) , ws , inline-seq ;
+bullet-item     = "-" , ws , inline-seq ;
+ordered-item    = digit , { digit } , "." , ws , inline-seq ;
+display-math    = "$$" , math-content , "$$" ;   (* alone on its line(s) *)
+comment         = "<!--" , { any-char } , "-->" ;  (* dropped from output *)
+paragraph       = inline-seq , { line-end , inline-seq } ;  (* until blank line *)
+
+(* ---- inline grammar ---------------------------------------- *)
+inline-seq      = { inline } ;
+inline          = escape | strong | emph | code | math | cross-ref
+                | citation | gloss-span | plain ;
+escape          = "\" , ( "\" | "$" | "*" | "[" | "]" | "`" | "@" | "#" | "_" ) ;
+strong          = "**" , inline-seq , "**" ;
+emph            = "*" , inline-seq , "*" ;
+code            = "`" , { any-char - "`" } , "`" ;
+math            = "$" , math-content , "$" ;
+cross-ref       = "@" , name ;      (* must not follow alphanumeric or "[" *)
+citation        = "[@" , name , "]" ;
+gloss-span      = "[" , { any-char - "]" } , "]" , "{.gloss}" ;
+plain           = ? any text not opening one of the above ? ;
+
+(* ---- math-content ------------------------------------------ *)
+(* A TeX-compatible subset, translated (never passed through) by
+   renderers. v1 command set:
+     \frac{A}{B}  \dfrac{A}{B}  \cdot  \qquad  \quad
+     ^{...} ^c    _{...} _c     \left( \right) (as plain parens)
+   Unknown commands are a build error. The set grows by RFC
+   (docs/community/rfc-template.md), never by renderer whim. *)
+
+(* ---- figure/directive fields ------------------------------- *)
+(* Inside figure (and other field-bearing) blocks, leading
+   unindented lines of the form `key: value` with indented
+   continuation lines are structured fields, e.g. alt/caption/credit. *)
+field-line      = field-key , ":" , [ ws , field-value ] , line-end ;
+field-key       = alpha-char , { alpha-char } ;
+field-cont      = indent , field-value , line-end ;

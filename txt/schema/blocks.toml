@@ -1,0 +1,105 @@
+# ============================================================
+# .tx block vocabulary — format version 1 (draft 0.2), NORMATIVE
+#
+# This file is the authority on which blocks exist and how they
+# may be used. txt-core embeds it; `txt check` enforces it.
+# Books cannot invent block types; the vocabulary evolves by
+# editorial-board RFC (docs/community/rfc-template.md).
+#
+# Per-kind keys:
+#   id             "required" | "optional"   (stable {#id})
+#   attrs          allowed attributes beyond the universal set
+#   requires_attrs attributes that must be present
+#   parents        if set, block may appear ONLY inside these kinds
+#   fields         `key: value` field lines recognized in the body
+#   requires_fields  fields that must be present and non-empty
+#
+# Universal attributes (allowed on every kind):
+#   audience   restricts a block to a build audience ("teacher")
+# ============================================================
+
+version = 1
+
+[kinds.objective]
+id = "required"
+description = "A learning objective, stated for the student."
+
+[kinds.definition]
+id = "required"
+attrs = ["term"]
+description = "A formal definition; `term` links glossary references."
+
+[kinds.theorem]
+id = "required"
+attrs = ["name"]
+description = "A theorem, law, or principle."
+
+[kinds.example]
+id = "required"
+attrs = ["difficulty", "standards"]
+description = "A worked example; usually contains a solution."
+
+[kinds.solution]
+id = "optional"
+parents = ["example", "exercise", "activity"]
+description = "Worked solution; addressed through its parent."
+
+[kinds.exercise]
+id = "required"
+attrs = ["difficulty", "standards"]
+description = "A practice problem."
+
+[kinds.answer]
+id = "optional"
+parents = ["exercise", "activity"]
+description = "The answer; `audience=\"teacher\"` keeps it out of student builds."
+
+[kinds.hint]
+id = "optional"
+parents = ["exercise", "example", "activity"]
+description = "A nudge shown to students (collapsible in web builds)."
+
+[kinds.figure]
+id = "required"
+requires_attrs = ["src"]
+attrs = ["src", "width"]
+fields = ["alt", "caption", "credit", "license"]
+requires_fields = ["alt"]
+description = "An image with required alt text. Builds refuse missing alt."
+
+[kinds.table]
+id = "required"
+fields = ["caption", "credit"]
+description = "A captioned data table."
+
+[kinds.note]
+id = "required"
+description = "A margin-worthy aside for the student."
+
+[kinds.warning]
+id = "required"
+description = "A common pitfall or safety-relevant caution."
+
+[kinds.activity]
+id = "required"
+attrs = ["duration", "grouping"]
+description = "A classroom activity; often `audience=\"teacher\"`."
+
+[kinds.vocabulary]
+id = "required"
+description = "The section or chapter's vocabulary list."
+
+[kinds.summary]
+id = "required"
+description = "Chapter summary; the last block of a chapter."
+
+[kinds.citation]
+id = "optional"
+attrs = ["key"]
+description = "A source citation record."
+
+[kinds.source]
+id = "optional"
+attrs = ["key", "license"]
+fields = ["credit", "license", "url"]
+description = "Provenance record for third-party material (licensing.md §4)."

@@ -1,11 +1,20 @@
 # The `.tx` Source Format
 
-Version 0.1 (draft). `.tx` is txt's plain-text source format for books:
+Version 0.2 (draft). `.tx` is txt's plain-text source format for books:
 a strict, semantic superset of CommonMark with typed blocks, required
 metadata, and stable addressing.
 
 Design position: **familiar enough that a Markdown user is productive in
 minutes; strict enough that a build is a real guarantee.**
+
+Normative artifacts (this document is the readable companion):
+
+- [`grammar.ebnf`](grammar.ebnf) — the surface grammar
+- [`txt/schema/blocks.toml`](../../txt/schema/blocks.toml) — the block
+  vocabulary: allowed kinds, attributes, nesting, and required fields,
+  embedded and enforced by txt-core
+- [ADR 0001](adr/0001-tx-language-typst-backend.md) — why `.tx` is a new
+  language while the print engine is an embedded backend (Typst first)
 
 ---
 
@@ -82,9 +91,12 @@ credit: Texture illustration team, CC BY 4.0.
 Core block vocabulary (v1): `objective`, `definition`, `theorem`, `example`,
 `solution`, `exercise`, `answer`, `hint`, `figure`, `table`, `note`,
 `warning`, `activity`, `vocabulary`, `summary`, `citation`, `source`.
-The vocabulary is a versioned schema; books cannot invent block types
-(design consistency + renderer guarantees), but the schema evolves by
-editorial-board RFC.
+The vocabulary — including each kind's allowed attributes, required
+fields, and nesting constraints (e.g., `solution` only inside `example`/
+`exercise`/`activity`) — is defined by
+[`txt/schema/blocks.toml`](../../txt/schema/blocks.toml). Books cannot
+invent block types (design consistency + renderer guarantees); the schema
+evolves by editorial-board RFC.
 
 ## 4. Audience Flags
 
@@ -96,8 +108,21 @@ source.
 
 ## 5. Inline Semantics
 
-- Math: `$…$` / `$$…$$`, TeX-compatible subset, parsed (not passed through)
-  → MathML + engine-native rendering.
+The v1 inline set: `**strong**`, `*emphasis*`, `` `code` ``, math, cross-
+references, citations, glossary spans, and index spans. Headings (`#`,
+sentence case), bullet lists (`- `), and numbered lists (`1. `) structure
+text runs between blocks.
+
+Backslash escapes a special character to its literal self:
+`\$` `\*` `\[` `\]` `` \` `` `\@` `\#` `\_` `\\`. Currency is the common
+case — write `costs \$6`, reserve bare `$…$` for math.
+
+- Math: `$…$` / `$$…$$`, a **TeX-compatible subset** that is parsed and
+  translated by renderers — never passed through to any engine. The v1
+  command set is `\frac`, `\dfrac`, `\cdot`, `\quad`, `\qquad`, and
+  `^`/`_` scripts; an unknown command is a build error, and the set grows
+  by RFC, not by renderer whim. Output: MathML (web/EPUB) + engine-native
+  math (PDF).
 - Cross-references: `@fig-slope`, `@exr-practice-1` — rendered with the
   right label ("Figure 3.2") per target language and design spec; dangling
   refs are build errors.
@@ -107,6 +132,14 @@ source.
   claims-needing-source lint (advisory) flags bare empirical claims.
 - Index entries: `[photosynthesis]{.index}` — print index is generated,
   never hand-built.
+
+## 5a. Book Structure (`SUMMARY.tx`)
+
+`SUMMARY.tx` (frontmatter kind `summary`) is the book's canonical spine:
+a nested bullet list of `[title](relative/path.tx)` links whose order is
+the book's order for every build target. Headings (`#`) group entries
+into parts. Files not reachable from `SUMMARY.tx` are not part of the
+book (checked; orphans are an error in book builds).
 
 ## 6. Standards Alignment
 
