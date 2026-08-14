@@ -2,8 +2,11 @@ use anyhow::{bail, Context, Result};
 use clap::{Parser, Subcommand};
 use std::path::{Path, PathBuf};
 use std::process::Command;
-use txt_core::{check_book, parse as parse_tx, Diagnostic, Document, Severity};
-use txt_render_typst::{render_book, Audience, BookMeta, TEMPLATE_TYP};
+use txt_core::{
+    check_book, format_source, parse as parse_tx, Audience, BookMeta, Diagnostic, Document,
+    Severity,
+};
+use txt_render_typst::TEMPLATE_TYP;
 
 #[derive(Parser)]
 #[command(
@@ -22,7 +25,7 @@ enum Cmd {
     Check { path: PathBuf },
     /// Parse one .tx file and print its document model as JSON
     Parse { file: PathBuf },
-    /// Build a book. Targets: typst (generate sources), pdf (via Typst)
+    /// Build a book. Targets: html, pdf (via Typst), typst (sources only)
     Build {
         book: PathBuf,
         #[arg(long, default_value = "pdf")]
@@ -30,9 +33,16 @@ enum Cmd {
         /// student strips teacher-only blocks; teacher includes them
         #[arg(long, default_value = "student")]
         audience: String,
-        /// Output directory (default: <book>/build/<audience>)
+        /// Output directory (default: <book>/build/<audience>/<target>)
         #[arg(long, short = 'o')]
         out: Option<PathBuf>,
+    },
+    /// Canonically format .tx files, auto-generating missing ids
+    Fmt {
+        paths: Vec<PathBuf>,
+        /// Report files that need formatting without writing (exit 1 if any)
+        #[arg(long)]
+        check: bool,
     },
 }
 
@@ -41,7 +51,51 @@ fn main() -> Result<()> {
         Cmd::Check { path } => cmd_check(&path),
         Cmd::Parse { file } => cmd_parse(&file),
         Cmd::Build { book, target, audience, out } => cmd_build(&book, &target, &audience, out),
+        Cmd::Fmt { paths, check } => cmd_fmt(&paths, check),
     }
+}
+
+fn cmd_fmt(paths: &[PathBuf], check: bool) -> Result<()> {
+    if paths.is_empty() {
+        bail!("txt fmt needs at least one file or directory");
+    }
+    let mut files = Vec::new();
+    for p in paths {
+        if p.is_dir() {
+            collect_tx(p, &mut files)?;
+        } else {
+            files.push(p.clone());
+        }
+    }
+    files.sort();
+    let mut changed = Vec::new();
+    for file in &files {
+        let src = std::fs::read_to_string(file)
+            .with_context(|| format!("reading {}", file.display()))?;
+        let formatted = format_source(&src)
+            .map_err(|e| anyhow::anyhow!("{}: {e}", file.display()))?;
+        if formatted != src {
+            changed.push(file.clone());
+            if !check {
+                std::fs::write(file, formatted)
+                    .with_context(|| format!("writing {}", file.display()))?;
+            }
+        }
+    }
+    if check && !changed.is_empty() {
+        for f in &changed {
+            eprintln!("would reformat {}", f.display());
+        }
+        println!("✗ {} of {} file(s) need formatting", changed.len(), files.len());
+        std::process::exit(1);
+    }
+    println!(
+        "✓ {} file(s) checked, {} {}",
+        files.len(),
+        changed.len(),
+        if check { "would change" } else { "reformatted" }
+    );
+    Ok(())
 }
 
 fn cmd_parse(file: &Path) -> Result<()> {
@@ -124,6 +178,8 @@ struct BookToml {
     title: String,
     subtitle: Option<String>,
     edition: String,
+    language: String,
+    repository: Option<String>,
 }
 
 fn read_book_toml(dir: &Path) -> Result<BookToml> {
@@ -150,6 +206,8 @@ fn read_book_toml(dir: &Path) -> Result<BookToml> {
         title: get("title").context("book.toml [book] is missing `title`")?,
         subtitle: get("subtitle"),
         edition: get("edition").unwrap_or_else(|| "draft".into()),
+        language: get("language").unwrap_or_else(|| "en".into()),
+        repository: get("repository"),
     })
 }
 
@@ -179,8 +237,8 @@ fn cmd_build(book_dir: &Path, target: &str, audience: &str, out: Option<PathBuf>
         "teacher" => Audience::Teacher,
         other => bail!("unknown audience `{other}` (student | teacher)"),
     };
-    if !matches!(target, "pdf" | "typst") {
-        bail!("unknown target `{target}` (pdf | typst)");
+    if !matches!(target, "pdf" | "typst" | "html") {
+        bail!("unknown target `{target}` (html | pdf | typst)");
     }
 
     let meta = read_book_toml(book_dir)?;
@@ -218,37 +276,60 @@ fn cmd_build(book_dir: &Path, target: &str, audience: &str, out: Option<PathBuf>
         title: meta.title.clone(),
         subtitle: meta.subtitle.clone(),
         edition: format!("Edition {}", meta.edition),
+        language: meta.language.clone(),
+        repository: meta.repository.clone(),
     };
-    let rendered = render_book(&book_meta, &parsed, audience)
-        .map_err(|e| anyhow::anyhow!("render: {e}"))?;
-
-    let out_dir = out.unwrap_or_else(|| book_dir.join("build").join(audience.as_str()));
+    let out_dir = out.unwrap_or_else(|| {
+        book_dir.join("build").join(audience.as_str()).join(target)
+    });
     std::fs::create_dir_all(out_dir.join("assets"))
         .with_context(|| format!("creating {}", out_dir.display()))?;
-    std::fs::write(out_dir.join("template.typ"), TEMPLATE_TYP)?;
-    std::fs::write(out_dir.join("main.typ"), &rendered.main_typ)?;
-    for asset in &rendered.assets {
+
+    let assets = match target {
+        "html" => {
+            let site = txt_render_html::render_book(&book_meta, &parsed, audience)
+                .map_err(|e| anyhow::anyhow!("render: {e}"))?;
+            std::fs::write(out_dir.join("style.css"), txt_render_html::STYLE_CSS)?;
+            for page in &site.pages {
+                std::fs::write(out_dir.join(&page.filename), &page.html)?;
+            }
+            site.assets
+        }
+        _ => {
+            let rendered = txt_render_typst::render_book(&book_meta, &parsed, audience)
+                .map_err(|e| anyhow::anyhow!("render: {e}"))?;
+            std::fs::write(out_dir.join("template.typ"), TEMPLATE_TYP)?;
+            std::fs::write(out_dir.join("main.typ"), &rendered.main_typ)?;
+            rendered.assets
+        }
+    };
+    for asset in &assets {
         std::fs::copy(&asset.source, out_dir.join(&asset.dest)).with_context(|| {
             format!("copying {} → {}", asset.source.display(), asset.dest)
         })?;
     }
 
-    if target == "typst" {
-        println!("✓ typst sources written to {}", out_dir.display());
-        return Ok(());
+    match target {
+        "html" => {
+            println!("✓ {}", out_dir.join("index.html").display());
+        }
+        "typst" => {
+            println!("✓ typst sources written to {}", out_dir.display());
+        }
+        _ => {
+            let typst = find_typst()?;
+            let pdf_name = format!("{}-{}.pdf", meta.id, audience.as_str());
+            let status = Command::new(&typst)
+                .args(["compile", "main.typ", &pdf_name])
+                .current_dir(&out_dir)
+                .status()
+                .with_context(|| format!("running {}", typst.display()))?;
+            if !status.success() {
+                bail!("typst compile failed (sources kept in {})", out_dir.display());
+            }
+            println!("✓ {}", out_dir.join(pdf_name).display());
+        }
     }
-
-    let typst = find_typst()?;
-    let pdf_name = format!("{}-{}.pdf", meta.id, audience.as_str());
-    let status = Command::new(&typst)
-        .args(["compile", "main.typ", &pdf_name])
-        .current_dir(&out_dir)
-        .status()
-        .with_context(|| format!("running {}", typst.display()))?;
-    if !status.success() {
-        bail!("typst compile failed (sources kept in {})", out_dir.display());
-    }
-    println!("✓ {}", out_dir.join(pdf_name).display());
     Ok(())
 }
 

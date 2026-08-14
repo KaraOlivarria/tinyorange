@@ -1,0 +1,141 @@
+/* Texture digital edition — base design (v0).
+   Brand tokens per docs/brand/brand-guide.md; light + dark. */
+
+:root {
+  --paper: #FAF8F4;
+  --surface: #FFFFFF;
+  --ink: #1A1E23;
+  --weft: #1D5DD8;
+  --loom: #0E7C5B;
+  --kraft: #B4835A;
+  --graphite: #5B6470;
+  --rule: #E5E0D6;
+  --serif: "Source Serif 4", "Charter", "Iowan Old Style", Georgia, serif;
+  --sans: "Source Sans 3", "Seravek", "Segoe UI", system-ui, sans-serif;
+  --mono: "Source Code Pro", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #15181D; --surface: #1D2127; --ink: #E9E6DF; --weft: #82A9F0;
+    --loom: #4CBF9A; --kraft: #C9986F; --graphite: #9AA3AF; --rule: #2B313A;
+  }
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--serif);
+  font-size: 1.0625rem;
+  line-height: 1.6;
+}
+a { color: var(--weft); text-underline-offset: 3px; }
+:focus-visible { outline: 2px solid var(--weft); outline-offset: 2px; border-radius: 2px; }
+
+.skip {
+  position: absolute; left: -999px; top: 0; background: var(--weft);
+  color: #fff; padding: .5rem 1rem; z-index: 10; font-family: var(--sans);
+}
+.skip:focus { left: 0; }
+
+header.site, nav.pager, main, footer.site {
+  max-width: 44rem; margin: 0 auto; padding: 0 1.25rem;
+}
+header.site {
+  display: flex; align-items: baseline; justify-content: space-between;
+  gap: 1rem; padding-top: 1.1rem; font-family: var(--sans);
+}
+.book-title { font-weight: 700; color: var(--ink); text-decoration: none; }
+.book-title:hover { color: var(--weft); }
+.edition-badge {
+  font-size: .75rem; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--loom); font-weight: 600;
+}
+
+nav.pager {
+  display: flex; gap: 1.4rem; font-family: var(--sans); font-size: .9rem;
+  padding-top: .6rem; padding-bottom: .6rem; border-bottom: 1px solid var(--rule);
+  margin-bottom: 1.6rem;
+}
+nav.pager a { text-decoration: none; color: var(--graphite); }
+nav.pager a:hover { color: var(--weft); text-decoration: underline; }
+
+h1 { font-size: 2rem; line-height: 1.15; letter-spacing: -0.01em;
+     font-family: var(--sans); margin: 1rem 0 1.2rem; }
+h2 { font-size: 1.35rem; font-family: var(--sans); margin: 2rem 0 .7rem; }
+h3 { font-size: 1.1rem; font-family: var(--sans); margin: 1.5rem 0 .5rem; }
+
+math { font-size: 1.08em; }
+math[display="block"] { margin: 1rem 0; }
+
+.objective {
+  font-family: var(--sans); font-size: .95rem; margin: .4rem 0;
+  padding-left: 1.1rem; text-indent: -1.1rem;
+}
+.objective::before { content: "▸ "; color: var(--loom); font-weight: 700; }
+
+.callout, .example {
+  margin: 1.4rem 0; padding: .9rem 1rem .9rem 1.1rem;
+  border-left: 3px solid var(--graphite); background: var(--surface);
+  border-radius: 0 4px 4px 0;
+}
+.callout-label, .example-label, .exercise-label {
+  font-family: var(--sans); font-size: .74rem; font-weight: 700;
+  letter-spacing: .09em; text-transform: uppercase; margin: 0 0 .4rem;
+}
+.callout > :last-child, .example > :last-child, .exercise > :last-child { margin-bottom: 0; }
+
+.definition, .theorem { border-left-color: var(--weft); }
+.definition .callout-label, .theorem .callout-label { color: var(--weft); }
+.note { border-left-color: var(--graphite); }
+.note .callout-label { color: var(--graphite); }
+.warning { border-left-color: var(--kraft); }
+.warning .callout-label { color: var(--kraft); }
+.vocabulary, .summary, .activity { border-left-color: var(--loom); }
+.vocabulary .callout-label, .summary .callout-label, .activity .callout-label { color: var(--loom); }
+.answer { border-left-color: var(--kraft); }
+.answer .callout-label { color: var(--kraft); }
+
+.example { border-left-width: 1px; }
+.example-label { color: var(--ink); }
+
+.exercise { margin: 1.3rem 0; }
+.exercise-label { color: var(--weft); }
+.difficulty { color: var(--graphite); letter-spacing: .15em; margin-left: .5rem; }
+
+details.solution, details.hint { margin: .8rem 0 .4rem; padding-left: .9rem; }
+details.solution summary, details.hint summary {
+  cursor: pointer; font-family: var(--sans); font-size: .82rem;
+  font-weight: 700; letter-spacing: .09em; text-transform: uppercase;
+  color: var(--graphite);
+}
+details.solution summary:hover, details.hint summary:hover { color: var(--weft); }
+details[open] summary { margin-bottom: .4rem; }
+
+figure { margin: 1.6rem 0; text-align: center; }
+figure img { max-width: 100%; height: auto; }
+figcaption {
+  font-family: var(--sans); font-size: .88rem; margin-top: .5rem;
+  text-align: center;
+}
+.fig-label { font-weight: 700; color: var(--weft); }
+.credit { display: block; font-size: .78rem; color: var(--graphite); margin-top: .15rem; }
+
+.gloss { font-style: italic; }
+.xref { text-decoration: none; border-bottom: 1px dotted var(--weft); }
+.xref:hover { border-bottom-style: solid; }
+
+nav.contents ol { font-size: 1.05rem; line-height: 2; }
+
+footer.site {
+  border-top: 1px solid var(--rule); margin-top: 3rem;
+  padding-top: 1.2rem; padding-bottom: 2.2rem;
+  font-family: var(--sans); font-size: .85rem; color: var(--graphite);
+}
+footer.site a { color: var(--graphite); }
+footer.site a:hover { color: var(--weft); }
+
+@media print {
+  header.site, nav.pager, footer.site { display: none; }
+}

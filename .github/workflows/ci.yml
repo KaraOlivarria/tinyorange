@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+env:
+  # Pinned for build determinism (spec §1.6); bump deliberately.
+  TYPST_VERSION: v0.15.1
+
+jobs:
+  test-and-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: txt
+
+      - name: Test workspace
+        working-directory: txt
+        run: cargo test --workspace
+
+      - name: Canonical formatting
+        working-directory: txt
+        run: cargo run -q -p txt-cli -- fmt --check ../examples
+
+      - name: Install Typst (pinned)
+        run: |
+          curl -sL "https://github.com/typst/typst/releases/download/${TYPST_VERSION}/typst-x86_64-unknown-linux-musl.tar.xz" | tar xJ
+          echo "$PWD/typst-x86_64-unknown-linux-musl" >> "$GITHUB_PATH"
+
+      - name: Build demo book — every target and audience
+        working-directory: txt
+        run: |
+          cargo run -q -p txt-cli -- build ../examples/algebra-1-demo --target pdf  --audience student
+          cargo run -q -p txt-cli -- build ../examples/algebra-1-demo --target pdf  --audience teacher
+          cargo run -q -p txt-cli -- build ../examples/algebra-1-demo --target html --audience student
+          cargo run -q -p txt-cli -- build ../examples/algebra-1-demo --target html --audience teacher
+
+      - name: Upload built book
+        uses: actions/upload-artifact@v4
+        with:
+          name: algebra-1-demo
+          path: examples/algebra-1-demo/build/
+          retention-days: 14

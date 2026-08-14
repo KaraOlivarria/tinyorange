@@ -9,6 +9,7 @@ grade_band = "8-9"
 language = "en-US"
 license = "CC-BY-4.0"
 edition = "0.1-demo"
+repository = "https://github.com/geonot/texture"
 
 [standards]
 frameworks = ["CCSS-Math"]

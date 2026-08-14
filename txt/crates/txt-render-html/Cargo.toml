@@ -1,0 +1,10 @@
+[package]
+name = "txt-render-html"
+description = "HTML backend for txt: the free digital edition — semantic HTML + MathML, no accounts, no tracking"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[dependencies]
+txt-core = { path = "../txt-core" }

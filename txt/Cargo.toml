@@ -1,6 +1,11 @@
 [workspace]
 resolver = "2"
-members = ["crates/txt-core", "crates/txt-cli", "crates/txt-render-typst"]
+members = [
+    "crates/txt-core",
+    "crates/txt-cli",
+    "crates/txt-render-typst",
+    "crates/txt-render-html",
+]
 
 [workspace.package]
 version = "0.0.1"

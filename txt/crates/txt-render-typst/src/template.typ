@@ -11,12 +11,13 @@
 #let serif = ("Source Serif 4", "Libertinus Serif", "New Computer Modern")
 #let sans = ("Source Sans 3", "Libertinus Sans", "Liberation Sans")
 
-#let book(title: "", subtitle: none, edition: "", audience: "student", body) = {
+#let book(title: "", subtitle: none, edition: "", audience: "student", lang: "en", body) = {
   set document(title: title)
   set page(paper: "us-letter", margin: (x: 1.1in, y: 1in), numbering: "1")
-  set text(font: serif, size: 11pt, fill: ink)
+  set text(font: serif, size: 11pt, fill: ink, lang: lang)
   set par(justify: true, leading: 0.62em)
   set heading(numbering: none)
+  show link: set text(fill: weft)
   show heading.where(level: 1): it => block(above: 0em, below: 1.1em)[
     #text(font: sans, weight: "bold", size: 23pt)[#it.body]
   ]

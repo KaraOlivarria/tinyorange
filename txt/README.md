@@ -21,53 +21,66 @@ it grows real users. Licensed Apache-2.0 per
   only inside `example`/`exercise`/…), required figure `alt:` text, figure
   sources on disk, `@ref` resolution, book-wide id uniqueness, audience
   values.
-- **`txt build`** — the Typst backend (ADR 0001): compiles a book to PDF
-  through the embedded design template, with TeX-subset math translation,
-  numbered cross-references resolved in prose, and audience stripping
-  (student vs. teacher editions from one source).
+- **`txt build`** — two backends from one document model (ADR 0001):
+  - `--target html`: the free digital edition. Static, semantic HTML +
+    native MathML, hyperlinked cross-references, collapsible solutions
+    and hints, light/dark brand CSS, no JavaScript, no tracking.
+  - `--target pdf`: the Typst print backend — embedded design template,
+    TeX-subset math translation, hyperlinked numbered cross-references.
+  - Both strip `audience="teacher"` blocks from student builds: student
+    book, teacher edition, and answer keys come from one source.
+- **`txt fmt`** — the canonical formatter: one attribute order and
+  quoting style so diffs show meaning, plus auto-generated stable ids
+  (`{kind}-{slug}-{hash}`) for blocks that need them. `--check` for CI.
 - **`txt parse`**: dump a file's document model as JSON.
 
 ```console
 $ cargo run -q -p txt-cli -- check ../examples/algebra-1-demo
 ✓ 3 file(s), 34 block(s), 0 errors
 
-$ cargo run -q -p txt-cli -- build ../examples/algebra-1-demo --audience student
-✓ ../examples/algebra-1-demo/build/student/algebra-1-demo-student.pdf
+$ cargo run -q -p txt-cli -- build ../examples/algebra-1-demo --target html
+✓ ../examples/algebra-1-demo/build/student/html/index.html
 
-$ cargo run -q -p txt-cli -- build ../examples/algebra-1-demo --audience teacher
-✓ ../examples/algebra-1-demo/build/teacher/algebra-1-demo-teacher.pdf
+$ cargo run -q -p txt-cli -- build ../examples/algebra-1-demo --target pdf --audience teacher
+✓ ../examples/algebra-1-demo/build/teacher/pdf/algebra-1-demo-teacher.pdf
+
+$ cargo run -q -p txt-cli -- fmt --check ../examples
+✓ 3 file(s) checked, 0 would change
 ```
 
-`--target typst` writes the generated sources without compiling (no Typst
-needed); PDF compilation finds `typst` via `$TXT_TYPST`, `$PATH`, or
-`~/.local/bin`. A build refuses to run on a book that fails `txt check`.
+`--target typst` writes generated sources without compiling; PDF
+compilation finds `typst` via `$TXT_TYPST`, `$PATH`, or `~/.local/bin`.
+A build refuses to run on a book that fails `txt check`.
 
-The demo book doubles as the golden test:
-`cargo test` parses `examples/algebra-1-demo` and requires a clean check.
+The demo book doubles as the golden test: CI runs the full suite, checks
+canonical formatting, and builds every target × audience on every push.
 
 ## Layout
 
 ```
 crates/
-├── txt-core          parser, document model, schema, check rules
-├── txt-render-typst  Typst backend: template.typ + doc-model→Typst renderer
+├── txt-core          parser, document model, schema, checks, math tree, fmt
+├── txt-render-typst  print backend: template.typ + doc-model→Typst
+├── txt-render-html   digital edition: semantic HTML + MathML + brand CSS
 └── txt-cli           the `txt` binary
 schema/
 └── blocks.toml       normative block vocabulary (embedded into txt-core)
 ```
+
+Math is parsed once in txt-core into a semantic tree; each backend emits
+its native form (Typst math, MathML). No TeX ever passes through raw.
 
 ## Known v0 limitations (deliberate)
 
 - `:::` markers inside fenced code blocks are not yet ignored.
 - Math is the v1 TeX subset (format.md §5); unknown commands are build
   errors and the set grows by RFC.
-- Cross-references render as resolved text ("Example 1"), not hyperlinks.
 - `[text](url)` links in prose are not yet inline-parsed.
-- No HTML/EPUB renderers yet.
+- No EPUB renderer yet; glossary terms render italic, not linked.
 
 ## Next milestones (spec §4, roadmap Phase 1)
 
-1. HTML renderer (the free digital edition) sharing the same doc model
-2. `txt fmt` canonical formatter (auto-generating missing ids)
-3. PDF/UA tagging evaluation on the Typst backend (ADR 0001 revisit trigger)
-4. Block-aware git merge/diff drivers
+1. EPUB 3 target reusing the HTML renderer
+2. PDF/UA tagging evaluation on the Typst backend (ADR 0001 revisit trigger)
+3. Block-aware git merge/diff drivers
+4. `txt preview` (live-reload local server over the HTML backend)
