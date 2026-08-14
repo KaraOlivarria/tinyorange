@@ -1,0 +1,13 @@
++++
+id = "summary"
+kind = "summary"
+title = "Algebra I"
++++
+
+# Part 1: Equations and inequalities
+
+- [Linear equations in one variable](chapters/01-linear-equations/chapter.tx)
+  - [Practice set](chapters/01-linear-equations/exercises.tx)
+
+<!-- Demo excerpt: a full book lists every part/chapter here; order in this
+     file is the book's canonical order for all build targets. -->

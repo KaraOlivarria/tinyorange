@@ -1,0 +1,162 @@
++++
+id = "ch-linear-eq"
+kind = "chapter"
+title = "Linear equations in one variable"
+standards = ["CCSS.MATH.8.EE.C.7"]
++++
+
+::: objective {#obj-solve-one-var}
+Solve linear equations in one variable, including equations whose
+solutions require combining like terms and using the distributive
+property.
+:::
+
+::: objective {#obj-classify-solutions}
+Recognize when a linear equation has one solution, no solution, or
+infinitely many solutions.
+:::
+
+You already solve equations in your head. If three tickets cost $18, you
+know one ticket costs $6 — and in that moment you solved $3t = 18$. In this
+chapter you'll turn that instinct into a method that works even when the
+numbers stop being friendly.
+
+## What an equation says
+
+An equation is a claim that two expressions name the same number. The claim
+can be true or false depending on the value of the variable — and *solving*
+means finding the values that make it true.
+
+::: definition {#def-equation term="equation"}
+An **equation** is a statement that two expressions are equal, written with
+an equals sign: $3t = 18$.
+:::
+
+::: definition {#def-solution term="solution"}
+A **solution** of an equation is a value of the variable that makes the
+equation true. For $3t = 18$, the solution is $t = 6$, because
+$3 \cdot 6 = 18$.
+:::
+
+::: definition {#def-linear-equation term="linear equation"}
+A **linear equation** in one variable is an equation in which each term is
+either a constant or a constant times the variable — no squares, square
+roots, or variables in denominators. $5x - 2 = 13$ is linear;
+$x^2 = 9$ is not.
+:::
+
+## The balance rule
+
+Picture an equation as a balanced scale: the two sides weigh the same. You
+may do anything to the scale that keeps it balanced — add the same weight
+to both sides, remove the same weight from both sides, double both sides,
+halve both sides (see @fig-balance).
+
+::: figure {#fig-balance src="figures/balance.svg"}
+alt: A two-pan balance scale in equilibrium. The left pan holds a box
+  labeled 3x plus four unit weights; the right pan holds nineteen unit
+  weights. Beneath it, the same scale after removing four unit weights
+  from each pan, still balanced, now showing 3x against fifteen.
+caption: Whatever you do to one side, do to the other — the scale stays
+  balanced, and the equation stays true.
+credit: Texture illustration team, CC BY 4.0.
+:::
+
+That's the whole method. Everything else is choosing *which* balanced moves
+to make, in which order, to leave the variable alone on one side.
+
+::: example {#ex-two-step difficulty=2}
+Solve $3x + 4 = 19$.
+
+::: solution
+Undo the operations in reverse order. The $x$ was multiplied by 3, then 4
+was added — so first remove the 4, then the 3.
+
+$$3x + 4 - 4 = 19 - 4$$
+$$3x = 15$$
+$$x = 5$$
+
+Check by substituting: $3 \cdot 5 + 4 = 19$. ✓
+:::
+:::
+
+::: note {#note-check-habit}
+The check at the end of @ex-two-step isn't decoration. Substituting your
+answer back takes ten seconds and catches most mistakes — make it a habit
+before you ever see a test.
+:::
+
+## Variables on both sides
+
+When the variable appears on both sides, add one more move: collect the
+variable terms on one side before you unwrap.
+
+::: example {#ex-both-sides difficulty=3}
+Solve $7x - 6 = 2x + 14$.
+
+::: solution
+Subtract $2x$ from both sides to gather the variable on the left:
+
+$$5x - 6 = 14$$
+
+Now it's the two-step pattern from @ex-two-step:
+
+$$5x = 20 \qquad x = 4$$
+
+Check: $7 \cdot 4 - 6 = 22$ and $2 \cdot 4 + 14 = 22$. ✓
+:::
+:::
+
+## One, none, or infinitely many
+
+Most linear equations have exactly one solution — but not all.
+
+::: example {#ex-no-solution difficulty=3}
+Solve $2(x + 3) = 2x + 4$.
+
+::: solution
+Distribute on the left: $2x + 6 = 2x + 4$. Subtract $2x$ from both sides:
+
+$$6 = 4$$
+
+That's false no matter what $x$ is. The equation has **no solution**.
+:::
+:::
+
+::: example {#ex-identity difficulty=3}
+Solve $3(x - 1) = 3x - 3$.
+
+::: solution
+Distribute: $3x - 3 = 3x - 3$. Both sides are the same expression, so the
+equation is true for *every* value of $x$: **infinitely many solutions**.
+:::
+:::
+
+::: warning {#warn-divide-by-zero}
+When both variable terms cancel, resist the urge to "divide by zero" or
+declare the answer $x = 0$. Look at what remains: a true statement means
+every number works; a false one means none do.
+:::
+
+::: activity {#act-equation-swap audience="teacher"}
+Pair activity (10 min): each student writes a linear equation whose
+solution is their partner's seat number, then partners swap and solve.
+Debrief on which "wrapping" operations made equations feel hard —
+this surfaces the reverse-order-of-operations idea before you name it.
+:::
+
+::: vocabulary {#vocab-ch1}
+[equation]{.gloss}, [solution]{.gloss}, [linear equation]{.gloss},
+inverse operation, distributive property, identity
+:::
+
+::: summary {#sum-ch1}
+- An equation claims two expressions are equal; a solution makes the claim
+  true.
+- Keep the balance: any operation applied to both sides preserves the
+  solutions.
+- Unwrap the variable by undoing operations in reverse order; gather
+  variable terms on one side first when they appear on both.
+- If the variable vanishes, a true remainder means infinitely many
+  solutions; a false remainder means none.
+:::

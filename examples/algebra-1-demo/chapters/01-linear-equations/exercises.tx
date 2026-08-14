@@ -1,0 +1,84 @@
++++
+id = "ch-linear-eq-practice"
+kind = "exercises"
+title = "Practice: linear equations in one variable"
+standards = ["CCSS.MATH.8.EE.C.7"]
++++
+
+Difficulty runs 1–3. Exercises marked with a star in the printed edition
+are difficulty 3. Answers appear in the teacher edition and answer key
+builds only (`audience="teacher"`).
+
+::: exercise {#exr-one-step difficulty=1}
+Solve $x + 9 = 4$.
+
+::: answer {audience="teacher"}
+$x = -5$.
+:::
+:::
+
+::: exercise {#exr-two-step difficulty=1}
+Solve $5x - 2 = 13$.
+
+::: answer {audience="teacher"}
+$x = 3$.
+:::
+:::
+
+::: exercise {#exr-fractions difficulty=2}
+Solve $\dfrac{x}{4} + 7 = 12$.
+
+::: hint
+Undo the $+\,7$ first, then the division by 4.
+:::
+
+::: answer {audience="teacher"}
+$x = 20$.
+:::
+:::
+
+::: exercise {#exr-both-sides difficulty=2 standards="CCSS.MATH.8.EE.C.7.b"}
+Solve $9x + 1 = 4x + 21$.
+
+::: answer {audience="teacher"}
+$x = 4$.
+:::
+:::
+
+::: exercise {#exr-distribute difficulty=2}
+Solve $3(2x - 5) = 21$.
+
+::: answer {audience="teacher"}
+$x = 6$. Accept either distributing first or dividing both sides by 3
+first — the second is slicker; ask who found it.
+:::
+:::
+
+::: exercise {#exr-classify difficulty=3 standards="CCSS.MATH.8.EE.C.7.a"}
+Without fully solving, decide whether each equation has one solution, no
+solution, or infinitely many. Explain how you know.
+
+1. $4(x + 2) = 4x + 8$
+2. $4(x + 2) = 4x + 10$
+3. $4(x + 2) = 3x + 8$
+
+::: answer {audience="teacher"}
+1. Infinitely many — both sides distribute to the identical expression.
+2. No solution — the variable terms cancel, leaving $8 = 10$, false.
+3. One solution ($x = 0$) — the variable terms don't cancel.
+
+Watch for students who answer (3) "no solution" because the solution is
+zero; it's the most common conflation in this cluster.
+:::
+:::
+
+::: exercise {#exr-write-own difficulty=3}
+Write a linear equation with variables on both sides whose solution is
+$x = -2$. Trade with a partner and solve each other's equations.
+
+::: answer {audience="teacher"}
+Answers vary; verify by substitution. A quick construction to share:
+start from $x = -2$ and apply the same operations to both sides in
+forward order, e.g. multiply by 3 and add $x + 5$ to both sides.
+:::
+:::
