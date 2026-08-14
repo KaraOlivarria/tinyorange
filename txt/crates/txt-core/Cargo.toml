@@ -1,0 +1,11 @@
+[package]
+name = "txt-core"
+description = "Parser, document model, and build-time checks for the .tx open-textbook format"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[dependencies]
+serde.workspace = true
+toml.workspace = true

@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Texture — Open textbooks, free for every student</title>
+<style>
+  /* Texture landing page draft — tokens per docs/brand/brand-guide.md.
+     Production self-hosts Source Serif 4 / Source Sans 3 / Source Code Pro
+     (all OFL); this draft uses matching system stacks. */
+  :root {
+    --bg: #FAF8F4;
+    --surface: #FFFFFF;
+    --ink: #1A1E23;
+    --muted: #5B6470;
+    --accent: #1D5DD8;
+    --on-accent: #FFFFFF;
+    --green: #0E7C5B;
+    --kraft: #B4835A;
+    --rule: #E5E0D6;
+    --code-bg: #F1EDE4;
+    --shadow: 0 1px 2px rgba(26,30,35,.06), 0 8px 24px rgba(26,30,35,.07);
+    --serif: "Source Serif 4", "Charter", "Iowan Old Style", Georgia, serif;
+    --sans: "Source Sans 3", "Seravek", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+    --mono: "Source Code Pro", ui-monospace, "Cascadia Code", "JetBrains Mono", Menlo, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #15181D; --surface: #1D2127; --ink: #E9E6DF; --muted: #9AA3AF;
+      --accent: #82A9F0; --on-accent: #10131A; --green: #4CBF9A;
+      --kraft: #C9986F; --rule: #2B313A; --code-bg: #171B21;
+      --shadow: 0 1px 2px rgba(0,0,0,.35), 0 8px 24px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="light"] {
+    --bg: #FAF8F4; --surface: #FFFFFF; --ink: #1A1E23; --muted: #5B6470;
+    --accent: #1D5DD8; --on-accent: #FFFFFF; --green: #0E7C5B;
+    --kraft: #B4835A; --rule: #E5E0D6; --code-bg: #F1EDE4;
+    --shadow: 0 1px 2px rgba(26,30,35,.06), 0 8px 24px rgba(26,30,35,.07);
+  }
+  :root[data-theme="dark"] {
+    --bg: #15181D; --surface: #1D2127; --ink: #E9E6DF; --muted: #9AA3AF;
+    --accent: #82A9F0; --on-accent: #10131A; --green: #4CBF9A;
+    --kraft: #C9986F; --rule: #2B313A; --code-bg: #171B21;
+    --shadow: 0 1px 2px rgba(0,0,0,.35), 0 8px 24px rgba(0,0,0,.35);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font-family: var(--serif); font-size: 1.0625rem; line-height: 1.6;
+  }
+  /* the weft: interlaced brand threads across the top of the page */
+  .weft {
+    height: 6px;
+    background: repeating-linear-gradient(90deg,
+      var(--accent) 0 28px, var(--green) 28px 44px,
+      var(--kraft) 44px 56px, var(--accent) 56px 84px);
+  }
+  a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 2px; }
+
+  .wrap { max-width: 68rem; margin: 0 auto; padding: 0 1.25rem; }
+
+  header.top {
+    display: flex; align-items: baseline; justify-content: space-between;
+    gap: 1rem; padding: 1.4rem 0 0;
+  }
+  .wordmark {
+    font-family: var(--serif); font-size: 1.6rem; font-weight: 600;
+    letter-spacing: -0.01em; color: var(--ink); text-decoration: none;
+  }
+  .wordmark b { color: var(--accent); font-weight: 700; }
+  nav.top-nav { font-family: var(--sans); font-size: .95rem; display: flex; gap: 1.4rem; }
+  nav.top-nav a { color: var(--muted); text-decoration: none; }
+  nav.top-nav a:hover { color: var(--accent); text-decoration: underline; }
+
+  .hero { padding: 4.5rem 0 3rem; }
+  .eyebrow {
+    font-family: var(--sans); font-size: .8rem; letter-spacing: .14em;
+    text-transform: uppercase; color: var(--green); font-weight: 600;
+  }
+  h1 {
+    font-size: clamp(2.1rem, 5vw, 3.3rem); line-height: 1.12;
+    font-weight: 600; letter-spacing: -0.015em; margin: .6rem 0 1rem;
+    max-width: 21ch; text-wrap: balance;
+  }
+  .lede { font-size: 1.2rem; color: var(--muted); max-width: 46ch; margin: 0 0 1.8rem; }
+  .cta-row { display: flex; flex-wrap: wrap; gap: .8rem; font-family: var(--sans); }
+  .btn {
+    display: inline-block; padding: .65rem 1.15rem; border-radius: 4px;
+    font-weight: 600; font-size: .98rem; text-decoration: none;
+    border: 1px solid transparent;
+  }
+  .btn-primary { background: var(--accent); color: var(--on-accent); }
+  .btn-primary:hover { filter: brightness(1.08); }
+  .btn-quiet { border-color: var(--rule); color: var(--ink); background: var(--surface); }
+  .btn-quiet:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* the thesis: source → book */
+  .compile {
+    display: grid; grid-template-columns: 1fr auto 1fr; align-items: stretch;
+    gap: 1rem; margin: 3.2rem 0 0;
+  }
+  .pane {
+    background: var(--surface); border: 1px solid var(--rule); border-radius: 6px;
+    box-shadow: var(--shadow); overflow: hidden; min-width: 0;
+  }
+  .pane-title {
+    font-family: var(--sans); font-size: .78rem; letter-spacing: .08em;
+    text-transform: uppercase; color: var(--muted);
+    padding: .55rem .9rem; border-bottom: 1px solid var(--rule);
+  }
+  .pane-src pre {
+    margin: 0; padding: 1rem .9rem 1.2rem; overflow-x: auto;
+    background: var(--code-bg); font-family: var(--mono);
+    font-size: .8rem; line-height: 1.55; height: 100%;
+  }
+  .tok-d { color: var(--accent); } .tok-a { color: var(--kraft); }
+  .tok-m { color: var(--green); } .tok-c { color: var(--muted); }
+  .arrow {
+    align-self: center; text-align: center; font-family: var(--mono);
+    font-size: .82rem; color: var(--muted); padding: 0 .2rem; white-space: nowrap;
+  }
+  .arrow .cmd {
+    display: block; color: var(--ink); background: var(--code-bg);
+    border: 1px solid var(--rule); border-radius: 4px; padding: .3rem .55rem;
+    margin-bottom: .35rem;
+  }
+  .pane-book { padding: 1.15rem 1.25rem 1.35rem; }
+  .bookdef {
+    border-left: 3px solid var(--accent); padding: .2rem 0 .2rem 1rem; margin: .3rem 0;
+  }
+  .bookdef .label {
+    font-family: var(--sans); font-size: .74rem; font-weight: 700;
+    letter-spacing: .12em; text-transform: uppercase; color: var(--accent);
+  }
+  .bookdef p { margin: .35rem 0 0; font-size: .98rem; }
+  .book-cap { margin: .9rem 0 0; font-size: .85rem; color: var(--muted); font-family: var(--sans); }
+  .compile-cap {
+    font-family: var(--sans); font-size: .9rem; color: var(--muted);
+    text-align: center; margin: 1rem auto 0; max-width: 52ch;
+  }
+
+  section.band { padding: 3.6rem 0; border-top: 1px solid var(--rule); }
+  h2 {
+    font-size: 1.7rem; font-weight: 600; letter-spacing: -0.01em;
+    margin: 0 0 1.6rem; text-wrap: balance;
+  }
+  .cols { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
+  .col h3 { font-size: 1.12rem; margin: 0 0 .4rem; }
+  .col p { margin: 0; color: var(--muted); font-size: .98rem; }
+  .col .mark { color: var(--green); font-family: var(--sans); font-weight: 700; }
+
+  .flow {
+    font-family: var(--mono); font-size: .82rem; color: var(--muted);
+    background: var(--surface); border: 1px solid var(--rule); border-radius: 6px;
+    padding: .9rem 1.1rem; overflow-x: auto; white-space: nowrap; margin-top: 1.6rem;
+  }
+  .flow b { color: var(--ink); font-weight: 600; }
+
+  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2rem; }
+  .card {
+    background: var(--surface); border: 1px solid var(--rule); border-radius: 6px;
+    padding: 1.3rem 1.3rem 1.2rem; display: flex; flex-direction: column; gap: .5rem;
+  }
+  .card h3 { margin: 0; font-size: 1.1rem; }
+  .card p { margin: 0; color: var(--muted); font-size: .95rem; flex: 1; }
+  .card a { font-family: var(--sans); font-size: .93rem; font-weight: 600; text-decoration: none; }
+  .card a:hover { text-decoration: underline; }
+
+  .status {
+    background: var(--surface); border: 1px solid var(--rule); border-left: 4px solid var(--green);
+    border-radius: 6px; padding: 1.2rem 1.4rem; font-size: .98rem;
+  }
+  .status strong { font-family: var(--sans); }
+
+  footer {
+    border-top: 1px solid var(--rule); margin-top: 1rem;
+    padding: 2rem 0 2.6rem; font-family: var(--sans); font-size: .88rem; color: var(--muted);
+  }
+  footer .frow { display: flex; flex-wrap: wrap; gap: .4rem 1.6rem; margin-bottom: .8rem; }
+  footer a { color: var(--muted); }
+  footer a:hover { color: var(--accent); }
+
+  @media (max-width: 800px) {
+    .compile { grid-template-columns: 1fr; }
+    .arrow { padding: .3rem 0; }
+    .cols, .cards { grid-template-columns: 1fr; }
+    .hero { padding-top: 3rem; }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .hero > * { animation: rise .5s ease-out both; }
+    .hero > *:nth-child(2) { animation-delay: .06s; }
+    .hero > *:nth-child(3) { animation-delay: .12s; }
+    .hero > *:nth-child(4) { animation-delay: .18s; }
+    .hero > *:nth-child(5) { animation-delay: .26s; }
+    @keyframes rise { from { opacity: 0; transform: translateY(8px); } }
+  }
+</style>
+</head>
+<body>
+<div class="weft" role="presentation"></div>
+<div class="wrap">
+
+  <header class="top">
+    <a class="wordmark" href="#"><b>T</b>e<b>xt</b>ure</a>
+    <nav class="top-nav" aria-label="Site">
+      <a href="#books">The books</a>
+      <a href="#how">How it works</a>
+      <a href="#join">Get involved</a>
+      <a href="https://github.com/geonot/texture">GitHub</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <p class="eyebrow">Open access &middot; A nonprofit in formation</p>
+    <h1>Open textbooks, written by the world's best educators, free for every student.</h1>
+    <p class="lede">Texture builds open-source, openly licensed textbooks — K-12 core
+    curriculum first, then higher education. Digital editions are free forever.
+    Print costs what printing costs.</p>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="https://github.com/geonot/texture/blob/main/MISSION.md">Read the mission</a>
+      <a class="btn btn-quiet" href="#join">Write with us</a>
+    </div>
+
+    <div class="compile" id="books">
+      <figure class="pane pane-src" style="margin:0">
+        <figcaption class="pane-title">chapter.tx &mdash; plain-text source</figcaption>
+<pre><code><span class="tok-d">::: definition</span> <span class="tok-a">{#def-linear-equation}</span>
+A **linear equation** in one variable is an
+equation in which each term is either a
+constant or a constant times the variable.
+<span class="tok-m">$5x - 2 = 13$</span> is linear; <span class="tok-m">$x^2 = 9$</span> is not.
+<span class="tok-d">:::</span>
+<span class="tok-c">// versioned in git &middot; reviewed like code</span></code></pre>
+      </figure>
+
+      <div class="arrow" aria-hidden="true">
+        <span class="cmd">$ txt build</span>
+        &rarr;
+      </div>
+
+      <figure class="pane pane-book" style="margin:0">
+        <div class="bookdef">
+          <span class="label">Definition &middot; 1.3</span>
+          <p>A <strong>linear equation</strong> in one variable is an equation in
+          which each term is either a constant or a constant times the variable.
+          5<i>x</i>&nbsp;&minus;&nbsp;2&nbsp;=&nbsp;13 is linear; <i>x</i>&sup2;&nbsp;=&nbsp;9 is not.</p>
+        </div>
+        <p class="book-cap">Algebra I &middot; Chapter 1 &middot; web, PDF, EPUB, and print — from one source</p>
+      </figure>
+    </div>
+    <p class="compile-cap">Books as source code: every Texture book is a git repository,
+    every change is reviewed by credentialed educators, and every format is built
+    from the same file — accessibility checked at build time.</p>
+  </section>
+
+  <section class="band">
+    <h2>Free is the feature. Rigor is the guarantee.</h2>
+    <div class="cols">
+      <div class="col">
+        <h3><span class="mark">&#10003;</span> Open, forever</h3>
+        <p>Every book is CC BY 4.0 — read, adapt, translate, and redistribute
+        without asking. Even if Texture disappeared tomorrow, the books stay free.</p>
+      </div>
+      <div class="col">
+        <h3><span class="mark">&#10003;</span> Reviewed like it matters</h3>
+        <p>Anyone can propose a change; nothing ships without subject-matter
+        review, pedagogy review, and copy editing. Editors sign every edition,
+        and the full review history is public.</p>
+      </div>
+      <div class="col">
+        <h3><span class="mark">&#10003;</span> Living books</h3>
+        <p>A teacher reports an error today; it's fixed in the next build — days,
+        not editions. Print owners can see exactly what changed since their printing.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="how">
+    <h2>How a Texture book gets made</h2>
+    <p style="max-width:60ch; color:var(--muted); margin:0">
+      <b style="font-family:var(--sans)">txt</b> is our open-source typesetting
+      tool: git-based version control for books, structured editorial review, and
+      automated professional typesetting. Educators work in a browser; the
+      toolchain guarantees that what was reviewed is what gets printed.</p>
+    <div class="flow" role="img" aria-label="Pipeline: propose, then automated checks, then subject-matter, pedagogy, and copy review, then merge, then build to web, PDF, EPUB, and print">
+      <b>propose</b> &rarr; txt check <span style="color:var(--green)">&#10003;</span>
+      &rarr; <b>review</b> (subject &middot; pedagogy &middot; copy)
+      &rarr; <b>merge</b> &rarr; <b>build</b> &rarr; web &middot; pdf &middot; epub &middot; print
+    </div>
+  </section>
+
+  <section class="band" id="join">
+    <h2>Get involved</h2>
+    <div class="cards">
+      <div class="card">
+        <h3>Educators &amp; experts</h3>
+        <p>Author, review, or translate with peers across the country. If you can
+        comment on a doc, you can contribute — no git required.</p>
+        <a href="https://github.com/geonot/texture/blob/main/docs/community/collaborators.md">Collaborator guide &rarr;</a>
+      </div>
+      <div class="card">
+        <h3>Schools &amp; districts</h3>
+        <p>Standards-aligned core curriculum at zero digital cost, with alignment
+        you can verify line by line. Pilot classrooms shape the books.</p>
+        <a href="https://github.com/geonot/texture/blob/main/docs/outreach/faq.md">District FAQ &rarr;</a>
+      </div>
+      <div class="card">
+        <h3>Funders</h3>
+        <p>Founding grants buy an 18-month runway: the txt toolchain and the first
+        complete pilot book, Algebra I, through full review and print.</p>
+        <a href="https://github.com/geonot/texture/blob/main/docs/outreach/one-pager.md">One-pager &rarr;</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" style="padding-top:0">
+    <div class="status">
+      <strong>Where we are:</strong> pre-incorporation. The founding documents,
+      the txt specification, and a demonstration chapter are public today; Algebra I
+      is the first pilot title. Everything happens in the open —
+      <a href="https://github.com/geonot/texture">follow along on GitHub</a>.
+    </div>
+  </section>
+
+  <footer>
+    <div class="frow">
+      <a href="https://github.com/geonot/texture/blob/main/MISSION.md">Mission</a>
+      <a href="https://github.com/geonot/texture/blob/main/docs/community/governance.md">Editorial governance</a>
+      <a href="https://github.com/geonot/texture/blob/main/docs/licensing.md">Licensing</a>
+      <a href="https://github.com/geonot/texture/blob/main/CODE_OF_CONDUCT.md">Code of conduct</a>
+      <a href="mailto:digiphilo@gmail.com">Contact</a>
+    </div>
+    Texture is a U.S. nonprofit in formation. Book content is CC BY 4.0;
+    "Texture" and the txt wordmark are trademarks — the books are yours,
+    the promise is ours.
+  </footer>
+
+</div>
+</body>
+</html>

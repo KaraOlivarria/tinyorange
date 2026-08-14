@@ -44,7 +44,9 @@ define what Texture is and how it operates.
 |----------|---------|
 | [docs/txt/spec.md](docs/txt/spec.md) | txt technical specification: architecture, CLI, platform |
 | [docs/txt/format.md](docs/txt/format.md) | The `.tx` source format specification |
+| [txt/](txt/) | txt v0 (Rust): `.tx` parser and `txt check` / `txt parse` |
 | [examples/algebra-1-demo/](examples/algebra-1-demo/) | Working sample book: one Algebra I chapter in `.tx` |
+| [site/index.html](site/index.html) | Landing page draft (self-contained, brand palette) |
 
 **Community & legal**
 

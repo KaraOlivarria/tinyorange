@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 300" font-family="sans-serif">
+  <title>A balanced two-pan scale illustrating the equation 3x + 4 = 19</title>
+  <desc>Reader-facing alt text lives in the .tx source; this embedded
+    description is a fallback for direct SVG viewing.</desc>
+  <!-- Palette: Ink #1A1E23, Weft Blue #1D5DD8, Kraft #B4835A -->
+  <g stroke="#1A1E23" stroke-width="3" fill="none" stroke-linecap="round">
+    <!-- base and post -->
+    <path d="M230 268 L330 268" />
+    <path d="M280 268 L280 90" />
+    <path d="M252 268 L280 240 L308 268" />
+    <!-- beam -->
+    <path d="M120 90 L440 90" />
+    <circle cx="280" cy="90" r="6" fill="#1A1E23" />
+    <!-- pan cords -->
+    <path d="M120 90 L92 150 M120 90 L148 150" />
+    <path d="M440 90 L412 150 M440 90 L468 150" />
+    <!-- pans -->
+    <path d="M78 150 A 42 42 0 0 0 162 150 Z" fill="#FAF8F4" />
+    <path d="M398 150 A 42 42 0 0 0 482 150 Z" fill="#FAF8F4" />
+  </g>
+  <!-- left pan contents: 3x box and four unit weights -->
+  <g>
+    <rect x="94" y="112" width="52" height="30" rx="3" fill="#1D5DD8" />
+    <text x="120" y="133" fill="#FFFFFF" font-size="16" text-anchor="middle" font-weight="bold">3x</text>
+    <g fill="#B4835A">
+      <rect x="88" y="146" width="14" height="14" rx="2" />
+      <rect x="104" y="146" width="14" height="14" rx="2" />
+      <rect x="120" y="146" width="14" height="14" rx="2" />
+      <rect x="136" y="146" width="14" height="14" rx="2" />
+    </g>
+  </g>
+  <!-- right pan contents: 19 unit weights -->
+  <g fill="#B4835A">
+    <rect x="404" y="112" width="14" height="14" rx="2" />
+    <rect x="420" y="112" width="14" height="14" rx="2" />
+    <rect x="436" y="112" width="14" height="14" rx="2" />
+    <rect x="452" y="112" width="14" height="14" rx="2" />
+    <rect x="404" y="128" width="14" height="14" rx="2" />
+    <rect x="420" y="128" width="14" height="14" rx="2" />
+    <rect x="436" y="128" width="14" height="14" rx="2" />
+    <rect x="452" y="128" width="14" height="14" rx="2" />
+    <rect x="404" y="144" width="14" height="14" rx="2" />
+    <rect x="420" y="144" width="14" height="14" rx="2" />
+    <rect x="436" y="144" width="14" height="14" rx="2" />
+    <rect x="452" y="144" width="14" height="14" rx="2" />
+    <rect x="404" y="160" width="14" height="14" rx="2" />
+    <rect x="420" y="160" width="14" height="14" rx="2" />
+    <rect x="436" y="160" width="14" height="14" rx="2" />
+    <rect x="452" y="160" width="14" height="14" rx="2" />
+    <rect x="412" y="176" width="14" height="14" rx="2" />
+    <rect x="428" y="176" width="14" height="14" rx="2" />
+    <rect x="444" y="176" width="14" height="14" rx="2" />
+  </g>
+  <g fill="#1A1E23" font-size="15" text-anchor="middle">
+    <text x="120" y="215">3x + 4</text>
+    <text x="440" y="215">19</text>
+    <text x="280" y="60" font-style="italic">balanced</text>
+  </g>
+</svg>
